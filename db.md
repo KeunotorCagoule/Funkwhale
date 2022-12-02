@@ -56,11 +56,11 @@ success
 
 ```sql
 # création de user sur la db
-mysql> CREATE USER 'gitea'@'10.105.1.10' IDENTIFIED BY 'rootroot';
+mysql> CREATE USER 'gitea'@'git.tp5.linux' IDENTIFIED BY 'rootroot';
 Query OK, 0 rows affected (0.03 sec)
 mysql> CREATE DATABASE giteadb CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';
 Query OK, 1 row affected (0.02 sec)
-mysql> GRANT ALL PRIVILEGES ON giteadb.* TO 'gitea'@'10.105.1.10';
+mysql> GRANT ALL PRIVILEGES ON giteadb.* TO 'gitea'@'git.tp5.linux';
 Query OK, 0 rows affected (0.01 sec)
 
 mysql> FLUSH PRIVILEGES;
@@ -74,7 +74,7 @@ Query OK, 0 rows affected (0.02 sec)
 
 ```sql
 # connexion sur la db depuis la machine git avec le user gitea
-[toto@git ~]$ mysql -u gitea -h 10.105.1.11 -p giteadb
+[toto@git ~]$ mysql -u gitea -h db.tp5.linux -p giteadb
 mysql>
 ```
 
@@ -128,7 +128,7 @@ tls-version=TLSv1.2,TLSv1.3
 ```
 
 ```sql
-mysql> DROP USER 'gitea'@'10.105.1.10';
+mysql> DROP USER 'gitea'@'git.tp5.linux';
 Query OK, 0 rows affected (0.03 sec)
 mysql> CREATE USER 'gitea'@'git.tp5.linux' IDENTIFIED BY 'rootroot' REQUIRE SSL;
 Query OK, 0 rows affected (0.03 sec)
@@ -147,13 +147,4 @@ Enter password:
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 [...]
 mysql>
-```
-
-```bash
-```
-
-```bash
-```
-
-```bash
 ```

@@ -106,3 +106,75 @@ $ curl git.tp5.linux
 
 ## SSL
 
+On génère notre clé / certificat
+
+```sh
+[toto@proxy ~]$ openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout server.key -out server.crt
+```
+
+On change les permissions et on change le propriétaire
+
+```sh
+[toto@proxy ~]$ chmod 0600 server.crt server.key
+[toto@proxy ~]$ sudo chown nginx:nginx server.crt
+[toto@proxy ~]$ sudo chown nginx:nginx server.key
+```
+
+On les déplace au bon endroit
+
+```sh
+[toto@proxy ~]$ sudo mv server.crt /etc/pki/tls/certs
+[toto@proxy ~]$ sudo mv server.key /etc/pki/tls/private/
+```
+
+On modifie la config de nginx et on restart
+
+```sh
+[toto@proxy ~]$ sudo vim /etc/nginx/conf.d/gitea.conf
+[toto@proxy ~]$ sudo cat /etc/nginx/conf.d/gitea.conf
+server {
+  # On indique le nom que client va saisir pour accéder au service
+  # Pas d'erreur ici, c'est bien le nom de web, et pas de proxy qu'on veut ici !
+  server_name git.tp5.linux;
+
+  # Port d'écoute de NGINX
+  listen 443 ssl;
+
+  ssl_certificate /etc/pki/tls/certs/server.crt;
+  ssl_certificate_key /etc/pki/tls/private/server.key;
+
+  location / {
+    # On définit des headers HTTP pour que le proxying se passe bien
+    proxy_set_header  Host $host;
+    proxy_set_header  X-Real-IP $remote_addr;
+    proxy_set_header  X-Forwarded-Proto https;
+    proxy_set_header  X-Forwarded-Host $remote_addr;
+    proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+
+    # On définit la cible du proxying
+    proxy_pass http://10.105.1.10:3000;
+  }
+}
+[toto@proxy ~]$ sudo systemctl restart nginx
+```
+
+On ouvre le port 443
+
+```sh
+[toto@proxy ~]$ sudo firewall-cmd --remove-port=80/tcp --permanent
+success
+[toto@proxy ~]$ sudo firewall-cmd --add-port=443/tcp --permanent
+success
+[toto@proxy ~]$ sudo firewall-cmd --reload
+success
+```
+
+Et enfin on test
+
+```sh
+$ curl https://git.tp5.linux
+curl: (60) schannel: SEC_E_UNTRUSTED_ROOT (0x80090325) - La chaîne de certificats a été fournie par une autorité qui n'est pas approuvée.
+More details here: https://curl.se/docs/sslcerts.html
+```
+
+Malgré l'erreur affichée, ce qui est normal, le serveur sous https fonctionne parfaitement
