@@ -6,7 +6,7 @@
 # installation de git sur la machine
 [toto@git ~]$ sudo dnf install git wget -y
 [...]
-Complete !
+Complete!
 
 # ajout d'un user git qui gèrera le gitea
 [toto@git ~]$ sudo useradd git -s /usr/sbin/nologin -m -d /var/lib/gitea

@@ -8,9 +8,12 @@ Documentation de notre installation de la solution Gitea
 
 - [Machines](#machines)
 - [Git](./git.md)
+- [Base de données](./db.md)
 
 ## Machines
 
-| Machine | IP          |
-| ------- | ----------- |
-| git     | 10.105.1.10 |
+| Machine         | IP          |
+| --------------- | ----------- |
+| git.tp5.linux   | 10.105.1.10 |
+| db.tp5.linux    | 10.105.1.11 |
+| proxy.tp5.linux | 10.105.1.12 |
