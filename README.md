@@ -7,7 +7,7 @@ Documentation de notre installation de la solution Gitea
 ## Sommaire
 
 - [Machines](#machines)
-- [Git](./git.md)
+- [Gitea](./gitea.md)
 - [Base de données](./db.md)
 - [Reverse Proxy](./proxy.md)
 
