@@ -64,11 +64,9 @@ Pour changer cela, on va donc faire
 ```sh
 [toto@proxy ~]$ sudo vim /etc/nginx/conf.d/gitea.conf
 [toto@proxy ~]$ cat /etc/nginx/conf.d/gitea.conf
-stream {
-        upstream stream_gitea {
-                server http://10.105.1.10:3000;
-                server http://10.105.1.15:3000;
-        }
+upstream stream_gitea {
+        server 10.105.1.10:3000;
+        server 10.105.1.15:3000;
 }
 
 server {
@@ -91,12 +89,17 @@ server {
             proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
 
             # On définit la cible du proxying
-            proxy_pass stream_gitea;
+            proxy_pass http://stream_gitea/;
         }
 }
+[toto@proxy ~]$ sudo systemctl restart nginx
+[toto@proxy ~]$ systemctl status nginx
+● nginx.service - The nginx HTTP and reverse proxy server
+     Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; vendor preset: disabled)
+     Active: active (running) since Thu 2022-12-08 22:32:22 CET; 1min 9s ago
 ```
 
-Où l'on a ajouter le `stream {...}` et modifé le `proxy_pass`.
-D'après les documentations trouvés, dans le `stream`, à droite des urls des `server` donnés, on aurait précisé un poid (weight) si l'on aurait voulu une répartition du traffic en 75%/25% ou autre, mais puisque l'on souhaite une répartition égale, on n'en précise pas.
+Où l'on a ajouter le `upstream {...}` et modifé le `proxy_pass`.
+D'après les documentations trouvés, dans le `upstream`, à droite des urls des `server` donnés, on aurait précisé un poid (weight) si l'on aurait voulu une répartition du traffic en 75%/25% ou autre, mais puisque l'on souhaite une répartition égale (50/50), on n'en précise pas.
 
-Et voilà !
+Et voilà ! On a un réel reverse proxy (j'imagine qu'il y a d'autres cas d'utilisations) car à la base c'est pour ce genre de "service" qu'il existe, et non pas pour un simple "http**s**"
