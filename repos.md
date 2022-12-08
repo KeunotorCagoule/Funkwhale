@@ -14,6 +14,7 @@ Dans un premier temps, on va créer le dossier qui sera partagé
 ```sh
 [toto@repos ~]$ cd /srv
 [toto@repos srv]$ sudo mkdir -p nfs_shares/repos
+[toto@repos srv]$ sudo mkdir nfs_shares/gitea
 ```
 
 Ensuite on créer le user
@@ -23,6 +24,7 @@ Ensuite on créer le user
 useradd: warning: the home directory /srv/nfs_shares/repos already exists.
 useradd: Not copying any file from skel directory into it.
 [toto@repos srv]$ sudo chown git:git /srv/nfs_shares/repos
+[toto@repos srv]$ sudo chown git:git /srv/nfs_shares/gitea
 ```
 
 On install le serveur NFS
@@ -35,6 +37,7 @@ Complete!
 [toto@repos srv]$ sudo vim /etc/exports
 [toto@repos srv]$ cat /etc/exports
 /srv/nfs_shares/repos git.tp5.linux(rw,sync,no_subtree_check)
+/srv/nfs_shares/gitea git.tp5.linux(rw,sync,no_subtree_check)
 ```
 
 Et on démarre le service
@@ -76,13 +79,14 @@ On fait une sauvegarde car lorsque l'on va monter le dossier distant, le dossier
 
 ```sh
 [toto@git toto]$ sudo tar -cf ~/backup.tar.gz /var/lib/gitea
-[toto@git toto]$ exit
+[toto@git toto]$ sudo cp /etc/gitea/app.ini ~
 ```
 
-On monte le dossier distant
+On monte les dossier distant
 
 ```sh
 [toto@git lib]$ sudo mount storage.tp5.linux:/srv/nfs_shares/repos /var/lib/gitea
+[toto@git lib]$ sudo mount storage.tp5.linux:/srv/nfs_shares/gitea /etc/gitea
 ```
 
 On test
@@ -93,6 +97,7 @@ On test
 
 # On remet le dossier backup à sa place
 [toto@git ~]$ sudo mv gitea /home/git
+[toto@git ~]$ sudo mv app.ini /home/git
 [toto@git ~]$ sudo -u git -H bash
 
 bash-5.1$ cd /home/git
@@ -100,7 +105,12 @@ bash-5.1$ mv gitea/* /var/lib/gitea
 bash-5.1$ ls /var/lib/gitea
 data  log
 
+bash-5.1$ mv app.ini /etc/gitea/
+bash-5.1$ ls /etc/gitea
+app.ini
+
 bash-5.1$ exit
+
 ```
 
 Sur `storage.tp5.linux`
@@ -108,6 +118,9 @@ Sur `storage.tp5.linux`
 ```sh
 [toto@storage nfs_shares]$ ls /srv/nfs_shares/repos
 data  log
+
+[toto@storage nfs_shares]$ ls /srv/nfs_shares/gitea
+app.ini
 ```
 
 Ca marche super !
@@ -121,10 +134,19 @@ Maintenant, on souhaite que le dossier soit mount automatiquement au lancement d
 [toto@git ~]$ cat /etc/fstab
 ...
 storage.tp5.linux:/srv/nfs_shares/repos /var/lib/gitea nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
+storage.tp5.linux:/srv/nfs_shares/gitea /etc/gitea nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=18000 0 0
 
 [toto@git ~]$ sudo reboot
-[toto@git ~]$ cat /proc/mounts | grep storage.tp5.linux
-storage.tp5.linux:/srv/nfs_shares/repos /var/lib/gitea nfs4 rw,noatime,vers=4.2,rsize=65536,wsize=65536,namlen=255,acregmin=1800,acregmax=1800,acdirmin=1800,acdirmax=1800,hard,proto=tcp,timeo=600,retrans=2,sec=sys,clientaddr=10.105.1.10,local_lock=none,addr=10.105.1.13 0 0
+[toto@git ~]$ df -h
+Filesystem                               Size  Used Avail Use% Mounted on
+devtmpfs                                 4.0M     0  4.0M   0% /dev
+tmpfs                                    227M  172K  227M   1% /dev/shm
+tmpfs                                     91M  3.3M   88M   4% /run
+/dev/mapper/rl-root                      6.2G  1.8G  4.5G  28% /
+/dev/sda1                               1014M  299M  716M  30% /boot
+storage.tp5.linux:/srv/nfs_shares/gitea  6.2G  1.2G  5.1G  20% /etc/gitea
+storage.tp5.linux:/srv/nfs_shares/repos  6.2G  1.2G  5.1G  20% /var/lib/gitea
+tmpfs                                     46M     0   46M   0% /run/user/1000
 ```
 
 Et on test
