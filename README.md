@@ -10,8 +10,9 @@ Documentation de notre installation de la solution Gitea
 - [Gitea](./gitea.md)
 - [Base de données](./db.md)
 - [Reverse Proxy](./proxy.md)
-- [NFS server](./repos.md)
+- [NFS server](./storage.md)
 - [Replication](./replication.md)
+- [Clone Gitea](./clone_gitea.md)
 - [Fail2Ban](./fail2ban.md)
 
 ## Machines
@@ -23,3 +24,4 @@ Documentation de notre installation de la solution Gitea
 | proxy.tp5.linux       | 10.105.1.12 |
 | storage.tp5.linux     | 10.105.1.13 |
 | replication.tp5.linux | 10.105.1.14 |
+| clone.tp5.linux       | 10.105.1.15 |
