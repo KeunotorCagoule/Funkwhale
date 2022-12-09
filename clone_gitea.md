@@ -102,4 +102,4 @@ server {
 Où l'on a ajouter le `upstream {...}` et modifé le `proxy_pass`.
 D'après les documentations trouvés, dans le `upstream`, à droite des urls des `server` donnés, on aurait précisé un poid (weight) si l'on aurait voulu une répartition du traffic en 75%/25% ou autre, mais puisque l'on souhaite une répartition égale (50/50), on n'en précise pas.
 
-Et voilà ! On a un réel reverse proxy (j'imagine qu'il y a d'autres cas d'utilisations) car à la base c'est pour ce genre de "service" qu'il existe, et non pas pour un simple "http**s**"
+Et voilà ! On a un réel reverse proxy !! J'imagine qu'il y a d'autres cas d'utilisations car à la base c'est pour ce genre de "service" proposé qu'il existe, et non pas pour un simple "http**s**"
