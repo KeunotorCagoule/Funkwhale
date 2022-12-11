@@ -8,7 +8,7 @@
 
 ## Installation
 
-On install nginx
+On installe nginx
 
 ```sh
 [toto@proxy ~]$ sudo dnf install nginx -y

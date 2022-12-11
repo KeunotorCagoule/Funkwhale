@@ -14,6 +14,7 @@ Documentation de notre installation de la solution Gitea
 - [Replication](./replication.md)
 - [Clone Gitea](./clone_gitea.md)
 - [Fail2Ban](./fail2ban.md)
+- [Autres configurations](./other.md)
 
 ## Machines
 

@@ -17,6 +17,8 @@ Dependencies resolved.
 Complete!
 ```
 
+## Configuration du Fail2Ban
+
 ```sh
 # ajout du filtre Fail2Ban
 [toto@git filter.d]$ sudo vim gitea.conf
@@ -38,4 +40,21 @@ maxretry = 3
 findtime = 300
 bantime = 10800
 action = iptables-allports
+```
+
+```sh
+[toto@git ~]$ sudo systemctl start fail2ban
+[toto@git ~]$ sudo systemctl status fail2ban
+● fail2ban.service - Fail2Ban Service
+     Loaded: loaded (/usr/lib/systemd/system/fail2ban.service; enabled; vendor preset: disabled)
+     Active: active (running) since Sun 2022-12-11 22:37:46 CET; 24min ago
+       Docs: man:fail2ban(1)
+    Process: 712 ExecStartPre=/bin/mkdir -p /run/fail2ban (code=exited, status=0/SUCCESS)
+   Main PID: 729 (fail2ban-server)
+      Tasks: 5 (limit: 2648)
+     Memory: 2.7M
+        CPU: 717ms
+     CGroup: /system.slice/fail2ban.service
+             └─729 /usr/bin/python3 -s /usr/bin/fail2ban-server -xf start
+[...]
 ```

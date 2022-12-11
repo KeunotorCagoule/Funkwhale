@@ -183,5 +183,60 @@ WantedBy=multi-user.target
 ```
 
 ```sh
+# création du timer associé à la backup pour la lancer tous les 4 heures
+[toto@db ~]$ vim /etc/systemd/system/backup.timer
+[toto@db ~]$ cat /etc/systemd/system/backup.timer
+[Unit]
+Description=Run service backup
 
+[Timer]
+OnCalendar=*-*-* 4:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
+```sh
+# lancement du timer
+[toto@db ~]$ sudo systemctl daemon-reload
+[sudo] password for toto:
+[toto@db ~]$ sudo systemctl start backup.timer
+[toto@db ~]$ sudo systemctl enable backup.timer
+Created symlink /etc/systemd/system/timers.target.wants/backup.timer → /etc/systemd/system/backup.timer.
+[toto@db ~]$ sudo systemctl status backup.timer
+● backup.timer - Run service backup
+     Loaded: loaded (/etc/systemd/system/backup.timer; enabled; vendor pres>
+     Active: active (waiting) since Sat 2022-12-10 11:10:36 CET; 18s ago
+      Until: Sat 2022-12-10 11:10:36 CET; 18s ago
+    Trigger: Sun 2022-12-11 04:00:00 CET; 16h left
+   Triggers: ● backup.service
+
+Dec 10 11:10:36 db.tp5.linux systemd[1]: Started Run service backup.
+
+# liste des timers existants
+[toto@db ~]$ sudo systemctl list-timers
+NEXT                        LEFT       LAST                        PASSED  >
+Sat 2022-12-10 12:14:40 CET 58min left Sat 2022-12-10 11:10:44 CET 4min 56s>
+Sun 2022-12-11 00:00:00 CET 12h left   Sat 2022-12-10 10:57:24 CET 18min ag>
+Sun 2022-12-11 04:00:00 CET 16h left   n/a                         n/a     >
+Sun 2022-12-11 11:12:20 CET 23h left   Sat 2022-12-10 11:12:20 CET 3min 20s>
+
+4 timers listed.
+Pass --all to see loaded but inactive timers, too.
+```
+
+## Restore la DB
+
+```sh
+# dans l'exemple la dernière backup date du 8 puisque le timer n'a été up que le 10
+[toto@db ~]$ ls -lt /srv/db_dumps/ | head -2
+total 132
+-rw-r--r--. 1 db_dump db_dump 10080 Dec  8 16:37 giteadb_221208_163748.tar.gz
+
+# unzip le fichier tar.gz
+[toto@db ~]$ sudo tar -xzf /srv/db_dumps/giteadb_221208_163748.tar.gz
+
+# commande à lancer pour récupérer la DB
+[toto@db ~]$ mysql -u db_dump -p nextcloud < /srv/db_dumps/giteadb_221208_163748.sql
 ```
